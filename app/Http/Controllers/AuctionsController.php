@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Auction;
 use Illuminate\Http\Request;
 
 class AuctionsController extends Controller
@@ -13,7 +14,9 @@ class AuctionsController extends Controller
      */
     public function index()
     {
-        //
+        $auctions = Auction::all();
+
+        return view('auctions.index', compact('auctions'));
     }
 
     /**
@@ -23,35 +26,48 @@ class AuctionsController extends Controller
      */
     public function create()
     {
-        //
+        return view('auctions.create');
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        //
+
+        $attributes = request()->validate([
+            "title" => "required|max:191",
+            "description" => "required",
+            "price_start" => "required|numeric",
+            "price_estimate" => "required|numeric",
+            "start_date" => "required|date",
+            "end_date" => "required|date|after_or_equal:start_date'"
+        ]);
+
+        $auction = auth()->user()->auctions()->create($attributes);
+
+        return redirect('/auctions/'.$auction->id);
+
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Auction $auction)
     {
-        //
+        return view('auctions.show', compact('auction'));
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -62,8 +78,8 @@ class AuctionsController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param \Illuminate\Http\Request $request
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -74,7 +90,7 @@ class AuctionsController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)

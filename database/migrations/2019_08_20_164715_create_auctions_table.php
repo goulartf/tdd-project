@@ -15,12 +15,18 @@ class CreateAuctionsTable extends Migration
     {
         Schema::create('auctions', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->unsignedBigInteger('user_id');
             $table->string('title');
             $table->text('description');
-            $table->decimal('value',10,2);
-            $table->decimal('value_start',10,2);
+            $table->decimal('price_estimate', 10, 2);
+            $table->decimal('price_start', 10, 2);
+            $table->dateTime('start_date');
             $table->dateTime('end_date');
             $table->timestamps();
+
+            $table->foreign('user_id')
+                ->references('id')->on('users')
+                ->onDelete('cascade');
         });
     }
 
