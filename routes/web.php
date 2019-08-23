@@ -11,14 +11,16 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
 
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/', 'HomeController@index')->name('home');
+
+Route::get('/auctions/{auction}/details', 'AuctionsController@details');
 
 Route::middleware('auth')->group(function () {
     Route::resource('/auctions', 'AuctionsController');
+
+    Route::post('/auctions/{auction}/bid', 'AuctionBidsController@store');
+
 });

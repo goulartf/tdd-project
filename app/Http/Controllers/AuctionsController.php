@@ -14,7 +14,7 @@ class AuctionsController extends Controller
      */
     public function index()
     {
-        $auctions = Auction::all();
+        $auctions = auth()->user()->auctions;
 
         return view('auctions.index', compact('auctions'));
     }
@@ -44,57 +44,95 @@ class AuctionsController extends Controller
             "price_start" => "required|numeric",
             "price_estimate" => "required|numeric",
             "start_date" => "required|date",
-            "end_date" => "required|date|after_or_equal:start_date'"
+            "end_date" => "required|date|after_or_equal:start_date"
         ]);
 
         $auction = auth()->user()->auctions()->create($attributes);
 
-        return redirect('/auctions/'.$auction->id);
+        return redirect('/auctions/' . $auction->id);
 
     }
 
     /**
      * Display the specified resource.
      *
-     * @param int $id
+     * @param Auction $auction
      * @return \Illuminate\Http\Response
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
     public function show(Auction $auction)
     {
+        $this->authorize('view', $auction);
+
         return view('auctions.show', compact('auction'));
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param int $id
+     * @param Auction $auction
      * @return \Illuminate\Http\Response
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function edit($id)
+    public function edit(Auction $auction)
     {
-        //
+        $this->authorize('update', $auction);
+        return view('auctions.edit', compact('auction'));
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param \Illuminate\Http\Request $request
-     * @param int $id
-     * @return \Illuminate\Http\Response
+     * @param Auction $auction
+     * @return void
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Auction $auction)
     {
-        //
+        $this->authorize('update', $auction);
+
+        $attributes = request()->validate([
+            "title" => "required|max:191",
+            "description" => "required",
+            "price_start" => "required|numeric",
+            "price_estimate" => "required|numeric",
+            "start_date" => "required|date",
+            "end_date" => "required|date|after_or_equal:start_date"
+        ]);
+
+        $auction->update($attributes);
+
+        return redirect('/auctions/' . $auction->id);
+
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param int $id
+     * @param Auction $auction
      * @return \Illuminate\Http\Response
+     * @throws \Illuminate\Auth\Access\AuthorizationException
      */
-    public function destroy($id)
+    public function destroy(Auction $auction)
     {
-        //
+        $this->authorize('delete', $auction);
+
+        $auction->delete();
+
+        return redirect('/auctions');
     }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param Auction $auction
+     * @return \Illuminate\Http\Response
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     */
+    public function details(Auction $auction)
+    {
+        return view('auctions.details', compact('auction'));
+    }
+
 }

@@ -12,4 +12,18 @@ class Auction extends Model
      * @var array
      */
     protected $guarded = [];
+
+    protected $dates = ['start_date', 'end_date'];
+
+
+    public function bids()
+    {
+        return $this->hasMany(Bid::class)->latest();
+    }
+
+    public function getLastBid()
+    {
+        return $this->bids()->first();
+    }
+
 }
