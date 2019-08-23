@@ -21,6 +21,11 @@ class Auction extends Model
         return $this->hasMany(Bid::class)->latest();
     }
 
+    public function medias()
+    {
+        return $this->hasMany(Media::class);
+    }
+
     public function getLastBid()
     {
         return $this->bids()->first();

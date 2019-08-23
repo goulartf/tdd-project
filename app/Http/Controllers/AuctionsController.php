@@ -44,10 +44,23 @@ class AuctionsController extends Controller
             "price_start" => "required|numeric",
             "price_estimate" => "required|numeric",
             "start_date" => "required|date",
-            "end_date" => "required|date|after_or_equal:start_date"
+            "end_date" => "required|date|after_or_equal:start_date",
+            "images" => "required|array",
+            "images.*" => "required|image:png,jpeg|max:2000"
         ]);
 
+        unset($attributes["images"]);
+
         $auction = auth()->user()->auctions()->create($attributes);
+
+        collect($request->images)->each(function ($image) use ($request, $auction) {
+
+            $path = $image->store('auctions');
+            $filename = basename($path);
+
+            $auction->medias()->create(["path" => $path, 'filename' => $filename]);
+
+        });
 
         return redirect('/auctions/' . $auction->id);
 
@@ -98,10 +111,22 @@ class AuctionsController extends Controller
             "price_start" => "required|numeric",
             "price_estimate" => "required|numeric",
             "start_date" => "required|date",
-            "end_date" => "required|date|after_or_equal:start_date"
+            "end_date" => "required|date|after_or_equal:start_date",
+            "images.*" => "image:png,jpeg|max:2000"
         ]);
 
+        unset($attributes["images"]);
+
         $auction->update($attributes);
+
+        collect($request->images)->each(function ($image) use ($request, $auction) {
+
+            $path = $image->store('auctions');
+            $filename = basename($path);
+
+            $auction->medias()->create(["path" => $path, 'filename' => $filename]);
+
+        });
 
         return redirect('/auctions/' . $auction->id);
 

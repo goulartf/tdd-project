@@ -21,6 +21,15 @@ class AuctionTest extends TestCase
         $this->assertInstanceOf(Collection::class, $auction->bids);
     }
 
+
+    /** @test */
+    public function it_has_medias()
+    {
+        $auction = factory(Auction::class)->create();
+
+        $this->assertInstanceOf(Collection::class, $auction->medias);
+    }
+
     /** @test */
     public function show_last_bid_value()
     {

@@ -2,11 +2,19 @@
 
 @section('content')
 
-    <h1>{{ $auction->title }}</h1>
-    <h1>{{ $auction->description }}</h1>
-    <h1>{{ $auction->price_start }}</h1>
-    <h1>{{ $auction->price_estimate }}</h1>
-    <h1>{{ $auction->start_date }}</h1>
-    <h1>{{ $auction->end_date }}</h1>
+    <div class="col-sm">
+        <div class="card">
+            <div class="card-body">
+                @foreach($auction->medias as $media)
+                    <img src="{{ asset('storage/'.$media->path) }}" alt="{{ $auction->title }}"
+                         width="100"
+                         height="100"/>
+                @endforeach
+                <h4 class="card-title">{{ $auction->title }}</h4>
+                <p class="card-text">{{ $auction->description }}</p>
+                <p class="card-text">$ {{ $auction->price_start }}</p>
+            </div>
+        </div>
+    </div>
 
 @endsection

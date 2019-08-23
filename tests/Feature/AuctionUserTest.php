@@ -4,6 +4,8 @@ namespace Tests\Feature;
 
 use App\Auction;
 use Carbon\Carbon;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -31,7 +33,7 @@ class AuctionUserTest extends TestCase
     {
         $auction = factory(Auction::class)->create();
 
-        $this->get("auctions/".$auction->id.'/details')->assertStatus(200);
+        $this->get("auctions/" . $auction->id . '/details')->assertStatus(200);
     }
 
     /** @test */
@@ -51,16 +53,23 @@ class AuctionUserTest extends TestCase
         $this->get('/auctions/create')->assertStatus(200);
         $attributes = factory(Auction::class)->raw(["user_id" => $user->id]);
 
+        $file = UploadedFile::fake()->image('auction.jpg');
 
-        $this->followingRedirects()
-            ->post('/auctions', $attributes)
+        $attributes_images = [];
+        $attributes_images["images"][] = $file;
+        $attributes_images["images"][] = $file;
+
+        $this->post('/auctions', array_merge($attributes, $attributes_images))
             ->assertSessionHasNoErrors()
-            ->assertSee($attributes["title"])
-            ->assertSee($attributes["description"])
-            ->assertSee($attributes["price_start"])
-            ->assertSee($attributes["price_estimate"]);
+            ->assertStatus(302);
 
         $this->assertDatabaseHas('auctions', $attributes);
+
+        $auction = Auction::first();
+
+        $auction->medias->each(function ($media) {
+            Storage::assertExists($media->path);
+        });
 
     }
 
@@ -71,18 +80,26 @@ class AuctionUserTest extends TestCase
 
         $auction = factory(Auction::class)->create(['user_id' => $user->id]);
         $attributes = $auction->toArray();
+        $attributes["title"] = "changed";
+
+        $file = UploadedFile::fake()->image('auction.jpg');
+
+        $attributes_images = [];
+        $attributes_images["images"][] = $file;
+        $attributes_images["images"][] = $file;
 
         $this->get('/auctions/' . $auction->id . '/edit')->assertStatus(200);
 
-        $this->followingRedirects()
-            ->put('/auctions/' . $auction->id, $attributes)
-            ->assertSessionHasNoErrors()
-            ->assertSee($attributes["title"])
-            ->assertSee($attributes["description"])
-            ->assertSee($attributes["price_start"])
-            ->assertSee($attributes["price_estimate"]);
+        $this->put('/auctions/' . $auction->id, array_merge($attributes, $attributes_images))
+            ->assertStatus(302);
 
         $this->assertDatabaseHas('auctions', $attributes);
+
+        $auction = Auction::first();
+
+        $auction->medias->each(function ($media) {
+            Storage::assertExists($media->path);
+        });
 
     }
 

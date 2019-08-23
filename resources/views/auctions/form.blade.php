@@ -11,6 +11,14 @@
 @csrf
 
 <div class="form-group">
+    <label for="title">Photos</label>
+    <div class="custom-file">
+        <input type="file" multiple name="images[]" class="custom-file-input" id="customFile">
+        <label class="custom-file-label" for="customFile">Choose file</label>
+    </div>
+</div>
+
+<div class="form-group">
     <label for="title">Title</label>
     <input type="text" name="title" id="title" class="form-control"
            value="{{ old('title', $auction->title) }}"
@@ -54,11 +62,14 @@
 
 </div>
 
+
 <div class="form-group">
     <label for="description">Description</label>
     <textarea type="text" name="description" id="description" class="form-control" placeholder=""
               aria-describedby="">{{ old('description', $auction->description) }}</textarea>
 </div>
+
+
 
 <button type="submit" class="btn btn-success float-right">Save</button>
 
