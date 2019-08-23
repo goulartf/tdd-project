@@ -29,9 +29,8 @@
                     @else
                         <img src="https://via.placeholder.com/200/c0c0c0?Text=Digital.com" class="card-img-top" alt="...">
                     @endif
-
                     <div class="card-body">
-                        <h4 class="card-title">{{ $auction->title }}</h4>
+                        <h4 class="card-title"><a href="/auctions/{{ $auction->id }}/details">{{ $auction->title }}</a></h4>
                         <p class="card-text">{{ $auction->description }}</p>
                         <p class="card-text">Estimate Price $ {{ $auction->price_start }}</p>
                         <p class="card-text">Start Price $ {{ $auction->price_start }}</p>
