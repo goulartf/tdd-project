@@ -31,7 +31,7 @@ class AuctionTest extends TestCase
     }
 
     /** @test */
-    public function show_last_bid_value()
+    public function it_show_last_bid_value()
     {
 
         $auction = factory(Auction::class)->create();
@@ -42,6 +42,41 @@ class AuctionTest extends TestCase
         $auction->getLastBid();
 
         $this->assertEquals($bid, $auction->getLastBid());
+
+    }
+
+    /** @test */
+    public function it_lower_bids_than_start_price()
+    {
+
+        $auction = factory(Auction::class)->create();
+
+        $value = $auction->price_start - 1;
+
+        $bid_lower = factory(Bid::class)->create(["auction_id" => $auction->id, "value" => rand(0, $value)]);
+        $bid_higher = factory(Bid::class)->create(["auction_id" => $auction->id, "value" => $auction->price_start + 1]);
+
+        $this->assertTrue($auction->lowerBids->contains($bid_lower));
+        $this->assertFalse($auction->lowerBids->contains($bid_higher));
+        $this->assertInstanceOf(Collection::class, $auction->lowerBids);
+
+    }
+
+    /** @test */
+    public function it_higher_bids_than_start_price()
+    {
+
+        $auction = factory(Auction::class)->create();
+
+
+        $value = $auction->price_start - 1;
+
+        $bid_lower = factory(Bid::class)->create(["auction_id" => $auction->id, "value" => rand(0, $value)]);
+        $bid_higher = factory(Bid::class)->create(["auction_id" => $auction->id, "value" => $auction->price_start + 1]);
+
+        $this->assertTrue($auction->higherBids->contains($bid_higher));
+        $this->assertFalse($auction->higherBids->contains($bid_lower));
+        $this->assertInstanceOf(Collection::class, $auction->higherBids);
 
     }
 

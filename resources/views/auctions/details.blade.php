@@ -31,7 +31,7 @@
             </div>
         </form>
         <ul class="list-group">
-            @forelse($auction->bids as $bid)
+            @forelse($auction->higherBids as $bid)
                 <li class="list-group-item d-flex justify-content-between align-items-center {{ $loop->first ? "active" : "" }}">
                     {{ $bid->user->name }}
                     <span class="badge badge-secondary badge-pill">{{ $bid->value }}</span>
@@ -42,6 +42,24 @@
                 </li>
             @endforelse
         </ul>
+
+
+        @if($auction->lowerBids->count() > 0)
+        <h3>Lower Values Bids</h3>
+        <ul class="list-group">
+            @forelse($auction->lowerBids as $bid)
+                <li class="list-group-item d-flex justify-content-between align-items-center {{ $loop->first ? "active" : "" }}">
+                    {{ $bid->user->name }}
+                    <span class="badge badge-secondary badge-pill">{{ $bid->value }}</span>
+                </li>
+            @empty
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <p> No bids available</p>
+                </li>
+            @endforelse
+        </ul>
+        @endif
+
     </div>
 
 @endsection

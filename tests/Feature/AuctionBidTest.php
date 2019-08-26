@@ -32,6 +32,29 @@ class AuctionBidTest extends TestCase
 
     }
 
+
+    /** @test */
+    public function an_user_can_make_a_lower_bid_an_auction()
+    {
+
+        $this->withoutExceptionHandling();
+
+        $this->signIn();
+
+        $auction = factory(Auction::class)->create();
+        $value = $auction->price_start + 1;
+
+        $this->get('auctions/' . $auction->id . '/details')->assertStatus(200);
+
+        $this->post('auctions/' . $auction->id . '/bid', ["value" => $value])
+            ->assertRedirect('auctions/' . $auction->id . '/details');
+
+        $this->get('auctions/' . $auction->id . '/details')
+            ->assertSeeText('Lower Values Bids')
+            ->assertSee($value);
+
+    }
+
     /** @test */
     public function a_bid_require_a_value()
     {

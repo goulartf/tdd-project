@@ -21,6 +21,22 @@ class Auction extends Model
         return $this->hasMany(Bid::class)->latest();
     }
 
+    public function lowerBids()
+    {
+        $start_price = $this->price_start;
+        return $this->hasMany(Bid::class)->where(function ($query) use ($start_price) {
+            return $query->where('value', '<', $start_price);
+        });
+    }
+
+    public function higherBids()
+    {
+        $start_price = $this->price_start;
+        return $this->hasMany(Bid::class)->where(function ($query) use ($start_price) {
+            return $query->where('value', '>=', $start_price);
+        });
+    }
+
     public function medias()
     {
         return $this->hasMany(Media::class);
